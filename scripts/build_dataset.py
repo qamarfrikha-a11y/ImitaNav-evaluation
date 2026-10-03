@@ -8,8 +8,8 @@ import glob
 import os
 import numpy as np
 
-RAW_DIR = os.path.expanduser('~/stage_imitation_learning/data/raw')
-PROCESSED_DIR = os.path.expanduser('~/stage_imitation_learning/data/processed')
+RAW_DIR = os.path.expanduser('~/imitanav_evaluation/data/raw')
+PROCESSED_DIR = os.path.expanduser('~/imitanav_evaluation/data/processed')
 
 def main():
     obs_files = sorted(glob.glob(os.path.join(RAW_DIR, 'obs_*.npy')))

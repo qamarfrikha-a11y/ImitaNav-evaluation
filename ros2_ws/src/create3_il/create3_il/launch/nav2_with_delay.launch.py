@@ -9,13 +9,13 @@ def generate_launch_description():
     # Arguments
     map_arg = DeclareLaunchArgument(
         'map',
-        default_value=os.path.expanduser('~/stage_imitation_learning/maps/couloir_L.yaml'),
+        default_value=os.path.expanduser('~/imitanav_evaluation/maps/couloir_L.yaml'),
         description='Full path to map yaml file to load'
     )
     
     params_arg = DeclareLaunchArgument(
         'params_file',
-        default_value=os.path.expanduser('~/stage_imitation_learning/config/nav2_params.yaml'),
+        default_value=os.path.expanduser('~/imitanav_evaluation/config/nav2_params.yaml'),
         description='Full path to the ROS2 parameters file to use'
     )
 

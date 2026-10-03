@@ -39,8 +39,8 @@ ESCAPE_LOCK_CYCLES = 12
 FINAL_APPROACH_DISTANCE = 1.5
 FINAL_APPROACH_LINEAR = 0.25
 FINAL_APPROACH_ANGULAR_GAIN = 1.5
-MODEL_PATH = os.path.expanduser('~/stage_imitation_learning/models/bc_model.pt')
-SAVE_DIR = os.path.expanduser('~/stage_imitation_learning/data/dagger')
+MODEL_PATH = os.path.expanduser('~/imitanav_evaluation/models/bc_model.pt')
+SAVE_DIR = os.path.expanduser('~/imitanav_evaluation/data/dagger')
 
 GOAL_X = 6.5
 GOAL_Y = -2.0

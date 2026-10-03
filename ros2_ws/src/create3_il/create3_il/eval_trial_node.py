@@ -34,8 +34,8 @@ LIDAR_DISTANCE_CAP = 10.0
 MAX_LINEAR_SPEED = 0.5
 MAX_ANGULAR_SPEED = 2.0
 MAX_GOAL_DISTANCE = 12.0
-MODEL_PATH = os.path.expanduser(os.environ.get('BC_MODEL_PATH', '~/stage_imitation_learning/models/bc_model.pt'))
-RESULTS_CSV = os.environ.get('EVAL_RESULTS_CSV', os.path.expanduser('~/stage_imitation_learning/results/evaluation.csv'))
+MODEL_PATH = os.path.expanduser(os.environ.get('BC_MODEL_PATH', '~/imitanav_evaluation/models/bc_model.pt'))
+RESULTS_CSV = os.environ.get('EVAL_RESULTS_CSV', os.path.expanduser('~/imitanav_evaluation/results/evaluation.csv'))
 
 GOAL_X = float(os.environ.get('EVAL_GOAL_X', 6.5))
 GOAL_Y = float(os.environ.get('EVAL_GOAL_Y', -2.0))

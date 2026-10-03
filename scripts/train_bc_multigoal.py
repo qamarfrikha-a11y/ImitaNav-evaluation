@@ -22,9 +22,9 @@ SEED = 42
 torch.manual_seed(SEED)
 np.random.seed(SEED)
 
-DATASET_PATH = os.path.expanduser('~/stage_imitation_learning/data/processed/dataset.npz')
-DAGGER_DIR = os.path.expanduser('~/stage_imitation_learning/data/dagger')
-MODEL_DIR = os.path.expanduser('~/stage_imitation_learning/models')
+DATASET_PATH = os.path.expanduser('~/imitanav_evaluation/data/processed/dataset.npz')
+DAGGER_DIR = os.path.expanduser('~/imitanav_evaluation/data/dagger')
+MODEL_DIR = os.path.expanduser('~/imitanav_evaluation/models')
 MODEL_PATH = os.path.join(MODEL_DIR, f'bc_model_multigoal_seed{SEED}.pt')
 
 # Fichiers dagger valides, un par nouveau goal (verifies manuellement :
@@ -180,7 +180,7 @@ def main():
     print(f"Modele sauvegarde dans: {MODEL_PATH}")
     print(f"\nProchaine etape recommandee : evaluer sur les 5 goals avec")
     print(f"  export BC_MODEL_PATH={MODEL_PATH}")
-    print(f"  cd ~/stage_imitation_learning/scripts")
+    print(f"  cd ~/imitanav_evaluation/scripts")
     print(f"  ./run_evaluation.sh 10 G1   (repeter pour G2 G3 G4 G5)")
 
 

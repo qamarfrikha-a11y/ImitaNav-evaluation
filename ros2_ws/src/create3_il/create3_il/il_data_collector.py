@@ -22,7 +22,7 @@ NUM_SCAN_SAMPLES = 36
 LIDAR_DISTANCE_CAP = 10.0
 MAX_LINEAR_SPEED = 0.5    # ajuste selon la vitesse max que tu utilises au teleop
 MAX_ANGULAR_SPEED = 2.0   # idem pour la rotation
-SAVE_DIR = os.path.expanduser('~/stage_imitation_learning/data/raw')
+SAVE_DIR = os.path.expanduser('~/imitanav_evaluation/data/raw')
 
 
 def euler_from_quaternion(q):

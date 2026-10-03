@@ -11,7 +11,7 @@ set -e
 
 N_TRIALS="${1:-15}"
 GOAL_NAME="${2:-G1}"
-WS_DIR="$HOME/stage_imitation_learning/ros2_ws"
+WS_DIR="$HOME/imitanav_evaluation/ros2_ws"
 
 declare -A GOAL_X_MAP=( [G1]=5.5 [G2]=6.5 [G3]=1.0 [G4]=6.0 [G5]=0.5 )
 declare -A GOAL_Y_MAP=( [G1]=1.5 [G2]=-2.0 [G3]=2.0 [G4]=0.0 [G5]=-2.0 )
@@ -23,10 +23,10 @@ fi
 
 export EVAL_GOAL_X="${GOAL_X_MAP[$GOAL_NAME]}"
 export EVAL_GOAL_Y="${GOAL_Y_MAP[$GOAL_NAME]}"
-export EVAL_RESULTS_CSV="$HOME/stage_imitation_learning/results/evaluation_${GOAL_NAME}.csv"
+export EVAL_RESULTS_CSV="$HOME/imitanav_evaluation/results/evaluation_${GOAL_NAME}.csv"
 
 # Trace le modele utilise, pour eviter toute ambiguite sur quel modele a ete evalue
-MODEL_USED="${BC_MODEL_PATH:-$HOME/stage_imitation_learning/models/bc_model.pt}"
+MODEL_USED="${BC_MODEL_PATH:-$HOME/imitanav_evaluation/models/bc_model.pt}"
 
 source /opt/ros/humble/setup.bash
 source "$WS_DIR/install/setup.bash"
@@ -158,4 +158,4 @@ done
 echo ""
 echo "=== Termine. Resultats dans $EVAL_RESULTS_CSV ==="
 echo "=== Modele evalue : $MODEL_USED ==="
-echo "Lance maintenant : python3 ~/stage_imitation_learning/scripts/summarize_evaluation.py $EVAL_RESULTS_CSV"
+echo "Lance maintenant : python3 ~/imitanav_evaluation/scripts/summarize_evaluation.py $EVAL_RESULTS_CSV"

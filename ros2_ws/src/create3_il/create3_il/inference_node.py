@@ -24,7 +24,7 @@ MAX_LINEAR_SPEED = 0.5
 MAX_ANGULAR_SPEED = 2.0
 MAX_GOAL_DISTANCE = 12.0
 
-MODEL_PATH = os.path.expanduser('~/stage_imitation_learning/models/bc_model.pt')
+MODEL_PATH = os.path.expanduser('~/imitanav_evaluation/models/bc_model.pt')
 INPUT_DIM = 40
 OUTPUT_DIM = 2
 

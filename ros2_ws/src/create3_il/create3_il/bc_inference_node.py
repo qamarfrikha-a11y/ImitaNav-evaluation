@@ -35,7 +35,7 @@ FINAL_APPROACH_DISTANCE = 1.5
 FINAL_APPROACH_LINEAR = 0.25
 FINAL_APPROACH_ANGULAR_GAIN = 1.5
 GOAL_REACHED_THRESHOLD = 0.5
-MODEL_PATH = os.path.expanduser(os.environ.get('BC_MODEL_PATH', '~/stage_imitation_learning/models/bc_model.pt'))
+MODEL_PATH = os.path.expanduser(os.environ.get('BC_MODEL_PATH', '~/imitanav_evaluation/models/bc_model.pt'))
 
 GOAL_X = 6.5
 GOAL_Y = -2.0

@@ -19,7 +19,7 @@ import glob
 import csv
 import matplotlib.pyplot as plt
 
-BASE_DIR = os.path.expanduser('~/stage_imitation_learning')
+BASE_DIR = os.path.expanduser('~/imitanav_evaluation')
 RESULTS_DIR = os.path.join(BASE_DIR, 'results')
 OUT_DIR = os.path.join(os.getcwd(), 'report_assets')
 os.makedirs(OUT_DIR, exist_ok=True)

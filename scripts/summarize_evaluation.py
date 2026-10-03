@@ -9,7 +9,7 @@ import os
 import statistics
 
 import sys
-RESULTS_CSV = sys.argv[1] if len(sys.argv) > 1 else os.path.expanduser('~/stage_imitation_learning/results/evaluation.csv')
+RESULTS_CSV = sys.argv[1] if len(sys.argv) > 1 else os.path.expanduser('~/imitanav_evaluation/results/evaluation.csv')
 
 
 def main():

@@ -30,10 +30,10 @@ import time
 import numpy as np
 
 HOME = os.path.expanduser("~")
-PROCESSED_DATASET = os.path.join(HOME, "stage_imitation_learning/data/processed/dataset.npz")
-DAGGER_DIR = os.path.join(HOME, "stage_imitation_learning/data/dagger")
+PROCESSED_DATASET = os.path.join(HOME, "imitanav_evaluation/data/processed/dataset.npz")
+DAGGER_DIR = os.path.join(HOME, "imitanav_evaluation/data/dagger")
 OUTPUT_DATASET = PROCESSED_DATASET  # ecrase le dataset traite -- une sauvegarde est faite avant
-BACKUP_DIR = os.path.join(HOME, "stage_imitation_learning/data/processed/backups")
+BACKUP_DIR = os.path.join(HOME, "imitanav_evaluation/data/processed/backups")
 
 
 def load_original_dataset(path):
