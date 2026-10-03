@@ -37,3 +37,5 @@ backups_full/
 *.db3
 # Old Git history
 .git_old/
+data/training_sets/*.npz
+models/clean/
