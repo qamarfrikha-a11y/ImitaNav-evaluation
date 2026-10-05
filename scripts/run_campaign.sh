@@ -11,7 +11,7 @@
 # - DRY_RUN=1 : affiche les essais sans rien lancer
 #
 # Variables optionnelles (exportees avant l'appel) :
-#   EVAL_USE_SAFETY=1|0  EVAL_USE_FINAL_APPROACH=1|0  EVAL_COLLISION_MODE=first|blocking
+#   EVAL_USE_SAFETY=1|0  EVAL_USE_FINAL_APPROACH=1|0  EVAL_MAX_BUMPS=3 (1 = regle stricte)
 #   EVAL_TIMEOUT_S=160   EVAL_WALL_LIMIT=900 (limite en temps reel par essai)
 
 set -u

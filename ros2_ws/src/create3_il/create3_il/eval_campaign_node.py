@@ -5,9 +5,8 @@ ligne au CSV maitre. Copie corrigee de eval_trial_node.py (l'original reste
 intact).
 
 Differences avec l'original :
-  - collision detectee EN DIRECT : l'essai s'arrete au 1er contact
-    (EVAL_COLLISION_MODE=first, defaut) ou avec l'ancienne regle
-    "blocking" ;
+  - collision detectee EN DIRECT : l'essai s'arrete au N-ieme contact
+    distinct (EVAL_MAX_BUMPS, defaut 3 ; 1 = regle stricte) ;
   - temps de navigation et timeout en TEMPS DE SIMULATION (horodatage de la
     position reelle), le temps reel est enregistre a part ;
   - une seule issue par essai : success / collision / timeout ;
@@ -85,6 +84,7 @@ USE_SAFETY = env('EVAL_USE_SAFETY', '1') == '1'
 USE_FINAL_APPROACH = env('EVAL_USE_FINAL_APPROACH', '1') == '1'
 # Collision = N-ieme contact DISTINCT (pare-chocs) hors zone de depart.
 # N=1 : regle stricte (1er contact) ; N=3 (defaut) : contacts isoles toleres.
+# Les messages repetes d'un meme choc (< BUMP_DEBOUNCE_S) comptent pour un seul.
 MAX_BUMPS = int(env('EVAL_MAX_BUMPS', 3))
 BUMP_DEBOUNCE_S = 1.0
 # Le robot demarre a ~16 cm de sa station de recharge : les contacts survenant
@@ -98,9 +98,6 @@ REVERSE_LINEAR_SPEED = -0.15
 ESCAPE_ANGULAR_SPEED = 1.0
 ESCAPE_LOCK_CYCLES = 12
 
-COLLISION_RECENCY_S = 3.0
-COLLISION_REPEAT_WINDOW_S = 5.0
-COLLISION_REPEAT_COUNT = 3
 
 FINAL_APPROACH_DISTANCE = 1.5
 FINAL_APPROACH_LINEAR = 0.25
