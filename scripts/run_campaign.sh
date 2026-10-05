@@ -80,7 +80,7 @@ wait_until() {   # wait_until <essais> <pause_s> <commande>
 start_sim() {    # start_sim <uid> <x> <y> <yaw>
     local uid="$1" x="$2" y="$3" yaw="$4"
     ros2 launch create3_lidar_description create3_lidar_full.launch.py \
-        use_rviz:=false x:="$x" y:="$y" yaw:="$yaw" \
+        use_rviz:=false spawn_dock:="${EVAL_SPAWN_DOCK:-true}" x:="$x" y:="$y" yaw:="$yaw" \
         > "$LOGDIR/${uid}_sim.txt" 2>&1 < /dev/null &
     SIM_PID=$!
     wait_until 40 2 'ros2 service list 2>/dev/null | grep -q "/controller_manager/list_controllers"' || return 1

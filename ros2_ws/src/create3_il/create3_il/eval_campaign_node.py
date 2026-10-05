@@ -113,6 +113,7 @@ FIELDS = [
     'outcome', 'success', 'collision', 'timeout',
     'nav_time_s', 'wall_time_s', 'path_length_m', 'final_dist_m',
     'n_hazard_events', 'n_hazard_ignored', 'n_bump_events', 'first_bump_s',
+    'leave_start_s', 'scan_msgs',
     'hazard_types', 'safety_triggers', 'angular_std',
     'use_safety_filter', 'use_final_approach', 'max_bumps',
     'git_commit', 'timestamp',
@@ -184,6 +185,8 @@ class EvalCampaignNode(Node):
         self.abort_code = None
         self.t_init = time.time()
         self.moving_cmd_steps = 0
+        self.scan_count = 0
+        self.leave_start_s = None
 
         qos = QoSProfile(depth=10)
         self.create_subscription(Odometry, '/odom', self.odom_callback, qos)
@@ -231,6 +234,7 @@ class EvalCampaignNode(Node):
         self.gt_received = True
 
     def scan_callback(self, msg):
+        self.scan_count += 1
         n = min(len(msg.ranges), NUM_SCAN_SAMPLES)
         for i in range(n):
             r = msg.ranges[i]
@@ -335,7 +339,7 @@ class EvalCampaignNode(Node):
     def control_step(self):
         if self.finished:
             return
-        if not self.odom_received or not self.gt_received:
+        if not self.odom_received or not self.gt_received or self.scan_count == 0:
             if time.time() - self.t_init > NO_DATA_ABORT_S:
                 self.abort(4, f"aucune donnee odom/ground truth apres {NO_DATA_ABORT_S:.0f} s "
                               f"(odom={self.odom_received}, gt={self.gt_received})")
@@ -352,6 +356,10 @@ class EvalCampaignNode(Node):
                 f"demande=({START_X:.2f},{START_Y:.2f},{START_YAW:.2f})")
 
         elapsed = self.elapsed_sim()
+        if (self.leave_start_s is None and self.start_snapshot is not None and
+                math.hypot(self.gt_x - self.start_snapshot[0],
+                           self.gt_y - self.start_snapshot[1]) >= START_GRACE_M):
+            self.leave_start_s = elapsed
 
         if self.gt_distance < GOAL_REACHED_THRESHOLD:
             self.publish_cmd(0.0, 0.0)
@@ -420,6 +428,8 @@ class EvalCampaignNode(Node):
             'n_hazard_events': len(self.hazard_timestamps),
             'n_hazard_ignored': self.hazard_ignored,
             'n_bump_events': self.bump_events,
+            'leave_start_s': '' if self.leave_start_s is None else round(self.leave_start_s, 2),
+            'scan_msgs': self.scan_count,
             'first_bump_s': '' if self.first_bump_s is None else round(self.first_bump_s, 2),
             'hazard_types': '|'.join(sorted(self.hazard_types)),
             'safety_triggers': self.safety_triggers,
