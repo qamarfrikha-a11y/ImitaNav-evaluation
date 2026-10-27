@@ -102,6 +102,7 @@ ESCAPE_LOCK_CYCLES = 12
 FINAL_APPROACH_DISTANCE = 1.5
 FINAL_APPROACH_LINEAR = 0.25
 FINAL_APPROACH_ANGULAR_GAIN = 1.5
+FINAL_APPROACH_USE_GT = env('EVAL_FINAL_APPROACH_GT', '0') == '1'
 
 FIELDS = [
     'trial_uid', 'experiment', 'goal', 'method', 'model_id', 'pct_correction',
@@ -112,7 +113,7 @@ FIELDS = [
     'n_hazard_events', 'n_hazard_ignored', 'n_bump_events', 'first_bump_s',
     'leave_start_s', 'scan_msgs',
     'hazard_types', 'safety_triggers', 'angular_std',
-    'use_safety_filter', 'use_final_approach', 'max_bumps',
+    'use_safety_filter', 'use_final_approach', 'max_bumps', 'spawn_dock',
     'git_commit', 'timestamp',
 ]
 
@@ -184,6 +185,7 @@ class EvalCampaignNode(Node):
         self.moving_cmd_steps = 0
         self.scan_count = 0
         self.leave_start_s = None
+        self.traj = []
 
         qos = QoSProfile(depth=10)
         self.create_subscription(Odometry, '/odom', self.odom_callback, qos)
@@ -278,9 +280,15 @@ class EvalCampaignNode(Node):
                 float(np.clip(a[1], -MAX_ANGULAR_SPEED, MAX_ANGULAR_SPEED)))
 
     def final_approach_action(self):
-        angular = float(np.clip(FINAL_APPROACH_ANGULAR_GAIN * self.goal_angle,
+        if FINAL_APPROACH_USE_GT:
+            # angle vers le but calcule avec la position et le cap REELS (simulateur)
+            a = math.atan2(GOAL_Y - self.gt_y, GOAL_X - self.gt_x) - self.gt_yaw
+            a = (a + math.pi) % (2 * math.pi) - math.pi
+        else:
+            a = self.goal_angle
+        angular = float(np.clip(FINAL_APPROACH_ANGULAR_GAIN * a,
                                 -MAX_ANGULAR_SPEED, MAX_ANGULAR_SPEED))
-        linear = 0.0 if abs(self.goal_angle) > 0.5 else FINAL_APPROACH_LINEAR
+        linear = 0.0 if abs(a) > 0.5 else FINAL_APPROACH_LINEAR
         return linear, angular
 
     def safety_filter(self, linear, angular):
@@ -391,6 +399,20 @@ class EvalCampaignNode(Node):
             self.moving_cmd_steps += 1
         self.prev_linear, self.prev_angular = linear, angular
         self.angular_history.append(angular)
+        self.traj.append((round(elapsed, 2), round(self.gt_x, 3), round(self.gt_y, 3),
+                          round(self.gt_yaw, 3), round(linear, 3), round(angular, 3),
+                          self.bump_events))
+
+    def write_trajectory(self):
+        try:
+            d = os.path.join(os.path.dirname(RESULTS_CSV), 'trajectories')
+            os.makedirs(d, exist_ok=True)
+            with open(os.path.join(d, f'{self.trial_uid}.csv'), 'w', newline='') as f:
+                w = csv.writer(f, lineterminator='\n')
+                w.writerow(['t_s', 'x', 'y', 'yaw', 'cmd_lin', 'cmd_ang', 'bump_events'])
+                w.writerows(self.traj)
+        except Exception as e:
+            self.get_logger().warn(f'trajectoire non ecrite : {e}')
 
     def finish(self, outcome, elapsed):
         if self.finished:
@@ -434,6 +456,7 @@ class EvalCampaignNode(Node):
             'use_safety_filter': int(USE_SAFETY),
             'use_final_approach': int(USE_FINAL_APPROACH),
             'max_bumps': MAX_BUMPS,
+            'spawn_dock': env('EVAL_SPAWN_DOCK', 'true'),
             'git_commit': env('EVAL_GIT_COMMIT', ''),
             'timestamp': datetime.datetime.now().isoformat(timespec='seconds'),
         }
@@ -441,6 +464,7 @@ class EvalCampaignNode(Node):
             f"Essai {self.trial_uid} : {outcome.upper()} "
             f"(sim={elapsed:.1f}s, reel={self.result['wall_time_s']}s, "
             f"traj={self.trajectory_length:.2f}m, dist_finale={self.gt_distance:.2f}m)")
+        self.write_trajectory()
 
 
 def write_result(result):

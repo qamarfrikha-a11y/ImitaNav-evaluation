@@ -39,3 +39,12 @@ backups_full/
 .git_old/
 data/training_sets/*.npz
 models/clean/
+
+# Sauvegardes et sorties locales d'evaluation
+*.bak*
+*.ancienne_version
+backup_campagne_g1/
+results/experiments/
+data/processed/cleaning_report.txt
+archive_ancien_pipeline/data/dataset_*.npz
+scripts/patch_approche_gt.py

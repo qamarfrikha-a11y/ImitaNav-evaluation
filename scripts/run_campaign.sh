@@ -21,6 +21,8 @@ RESULTS="$(realpath -m "${2:?Usage: $0 <plan.csv> <resultats.csv> [nb_max]}")"
 MAX_NEW="${3:-1000000}"
 DRY_RUN="${DRY_RUN:-0}"
 WALL_LIMIT="${EVAL_WALL_LIMIT:-900}"
+# Station de recharge absente par defaut (protocole : elle bloque le depart)
+export EVAL_SPAWN_DOCK="${EVAL_SPAWN_DOCK:-false}"
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WS_DIR="$ROOT/ros2_ws"
@@ -53,9 +55,10 @@ SIM_PID=""
 cleanup_full() {
     [[ -n "$SIM_PID" ]] && kill -9 "$SIM_PID" 2>/dev/null || true
     for p in gzserver gzclient "ros2 launch" spawn_entity spawner robot_state_publisher \
-             joint_state_publisher motion_control static_transform_publisher eval_campaign_node; do
+             joint_state_publisher motion_control irobot_create static_transform_publisher eval_campaign_node; do
         pkill -9 -f "$p" 2>/dev/null || true
     done
+    pkill -9 -f "[i]robot_create_nodes|[l]aunch_params_" 2>/dev/null || true
     for _ in $(seq 1 8); do
         remaining=$(ros2 node list 2>/dev/null | grep -c "create3\|motion_control\|robot_state" || true)
         [[ "$remaining" -eq 0 ]] && break
@@ -65,6 +68,14 @@ cleanup_full() {
     sleep 1
     ros2 daemon start > /dev/null 2>&1 || true
     sleep 2
+    # attente stricte : plus aucun processus de simulation avant de continuer
+    for _ in $(seq 1 30); do
+        pgrep -f "[g]zserver|[g]zclient|[s]pawn_entity|[r]obot_state_publisher|[c]ontroller_manager|[m]otion_control|[i]robot_create_nodes|[l]aunch_params_" > /dev/null || break
+        pkill -9 -f "[g]zserver|[g]zclient|[s]pawn_entity|[r]obot_state_publisher|[c]ontroller_manager|[m]otion_control|[i]robot_create_nodes|[l]aunch_params_" 2>/dev/null || true
+        sleep 1
+    done
+    rm -f /dev/shm/fastrtps_* /dev/shm/sem.fastrtps_* 2>/dev/null || true
+    sleep 3
     SIM_PID=""
 }
 
@@ -78,19 +89,25 @@ wait_until() {   # wait_until <essais> <pause_s> <commande>
 }
 
 start_sim() {    # start_sim <uid> <x> <y> <yaw>
+    local T0=$SECONDS
     local uid="$1" x="$2" y="$3" yaw="$4"
     ros2 launch create3_lidar_description create3_lidar_full.launch.py \
-        use_rviz:=false spawn_dock:="${EVAL_SPAWN_DOCK:-true}" x:="$x" y:="$y" yaw:="$yaw" \
+        use_rviz:=false spawn_dock:="$EVAL_SPAWN_DOCK" x:="$x" y:="$y" yaw:="$yaw" \
         > "$LOGDIR/${uid}_sim.txt" 2>&1 < /dev/null &
     SIM_PID=$!
-    wait_until 40 2 'ros2 service list 2>/dev/null | grep -q "/controller_manager/list_controllers"' || return 1
-    wait_until 20 1 'ros2 topic list 2>/dev/null | grep -q "/diffdrive_controller/cmd_vel_unstamped"' || return 1
-    wait_until 15 2 'timeout 3 ros2 service call /controller_manager/list_controllers controller_manager_msgs/srv/ListControllers "{}" 2>&1 | grep -q diffdrive_controller' || return 1
+    wait_until 40 2 'ros2 service list 2>/dev/null | grep -q "/controller_manager/list_controllers"' || { echo "   [diag] echec etape A_service_list apres $((SECONDS-T0))s"; return 1; }
+    wait_until 20 1 'ros2 topic list 2>/dev/null | grep -q "/diffdrive_controller/cmd_vel_unstamped"' || { echo "   [diag] echec etape B_topic_cmd_vel apres $((SECONDS-T0))s"; return 1; }
+    wait_until 15 2 'timeout 3 ros2 service call /controller_manager/list_controllers controller_manager_msgs/srv/ListControllers "{}" 2>&1 | grep -q diffdrive_controller' || { echo "   [diag] echec etape C_call_list_controllers apres $((SECONDS-T0))s"; return 1; }
     sleep 5
-    for _ in 1 2 3; do
-        ros2 param set /motion_control safety_override full > /dev/null 2>&1 && break
+    local ok_ovr=0
+    for _ in $(seq 1 8); do
+        timeout 20 ros2 param set --no-daemon --spin-time 3 /motion_control safety_override full > /tmp/ovr_set.txt 2>&1
+        if timeout 20 ros2 param get --no-daemon --spin-time 3 /motion_control safety_override 2>&1 | tee /tmp/ovr_get.txt | grep -q full; then
+            ok_ovr=1; break
+        fi
         sleep 2
     done
+    [[ "$ok_ovr" -eq 1 ]] || { echo "   [diag] echec etape D_safety_override apres $((SECONDS-T0))s | set: $(head -c 120 /tmp/ovr_set.txt | tr '\n' ' ') | get: $(head -c 120 /tmp/ovr_get.txt | tr '\n' ' ')"; return 1; }
     return 0
 }
 
