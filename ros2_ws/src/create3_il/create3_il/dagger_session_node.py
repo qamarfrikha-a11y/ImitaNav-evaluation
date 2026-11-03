@@ -306,6 +306,9 @@ class DaggerSessionNode(Node):
         act_path = os.path.join(SAVE_DIR, f'dagger_act_{timestamp}.npy')
         np.save(obs_path, np.array(self.observations))
         np.save(act_path, np.array(self.actions))
+        import json
+        with open(os.path.join(SAVE_DIR, f'dagger_meta_{timestamp}.json'), 'w') as f:
+            json.dump({'goal_x': GOAL_X, 'goal_y': GOAL_Y, 'n_steps': len(self.observations)}, f)
         self.get_logger().info(
             f"Sauvegarde: {len(self.observations)} pas de correction -> {obs_path} / {act_path}")
 
