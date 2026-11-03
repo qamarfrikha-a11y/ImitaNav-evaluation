@@ -10,7 +10,7 @@ Chaque .npz contient : obs, act, is_val, source, group
 
 Jeux produits :
   bc, bc_dag_g1, bc_dag_g1_x2 (variante : corrections G1 dupliquees),
-  bc_dag_all, bc_dag_g1_3pct, bc_dag_g1_5pct,
+  bc_dag_all, bc_dag_g1_5pct,
   bc_dag_g1_unfiltered (variante : avec les 8 sessions exclues)
 
 Usage : python3 scripts/build_training_sets.py
@@ -43,6 +43,9 @@ OTHER_GOALS = {
     "G5": "20260825_005823",
 }
 
+# Sessions collectees pour le palier ~10 % (goal a verifier dans dagger_meta_<ts>.json)
+OTHER_GOALS_10 = {"G2": [], "G3": [], "G4": [], "G5": []}
+
 # Sessions dont la distance au goal est SATUREE (9 a 12 m pendant toute la
 # session) : incompatibles avec G1 (a 5.7 m du depart), entree "goal"
 # incoherente. Exclues de tous les jeux sauf bc_dag_g1_unfiltered.
@@ -57,7 +60,7 @@ def ts_of(path, prefix):
 
 
 def load_groups():
-    bc, g1, other, suspect = [], [], [], []
+    bc, g1, other, suspect, other10 = [], [], [], [], []
     for f in sorted(glob.glob(str(RAW / "obs_*.npy"))):
         ts = ts_of(f, "obs_")
         o = np.load(f)
@@ -65,6 +68,7 @@ def load_groups():
         assert len(o) == len(a), f"taille obs/act differente : {ts}"
         bc.append(dict(name=f"bc_{ts}", obs=o, act=a, source=0))
     other_ts = set(OTHER_GOALS.values())
+    other10_ts = {t for v in OTHER_GOALS_10.values() for t in v}
     for f in sorted(glob.glob(str(DAG / "dagger_obs_*.npy"))):
         ts = ts_of(f, "dagger_obs_")
         o = np.load(f)
@@ -72,11 +76,13 @@ def load_groups():
         assert len(o) == len(a), f"taille obs/act differente : {ts}"
         if ts in other_ts:
             other.append(dict(name=f"dag_other_{ts}", obs=o, act=a, source=2))
+        elif ts in other10_ts:
+            other10.append(dict(name=f"dag_other10_{ts}", obs=o, act=a, source=2))
         elif ts in SUSPECT_SESSIONS:
             suspect.append(dict(name=f"dag_suspect_{ts}", obs=o, act=a, source=1))
         else:
             g1.append(dict(name=f"dag_g1_{ts}", obs=o, act=a, source=1))
-    return bc, g1, other, suspect
+    return bc, g1, other, suspect, other10
 
 
 def take_prefix(groups, n):
@@ -137,7 +143,7 @@ def assemble(groups, dup_g1_corr=False):
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    bc, g1, other, suspect = load_groups()
+    bc, g1, other, suspect, other10 = load_groups()
     n_bc = sum(len(g["obs"]) for g in bc)
     n_g1 = sum(len(g["obs"]) for g in g1)
     n_ot = sum(len(g["obs"]) for g in other)
@@ -164,12 +170,13 @@ def main():
         "bc_dag_g1_unfiltered": (bc + g1 + suspect, False),
         "bc_dag_all": (bc + g1 + other, False),
         # Lecture A : paliers de corrections G1 (BC + x % de corrections G1)
-        "bc_dag_g1_3pct": (bc + take_prefix(g1_chrono, n_for(0.03)), False),
         "bc_dag_g1_5pct": (bc + take_prefix(g1_chrono, n_for(0.05)), False),
         # Lecture B : paliers de corrections des NOUVEAUX goals (G2-G5) ajoutees
         # a BC + corrections G1. 0 % = bc_dag_g1 ; ~5 % = bc_dag_all (toutes).
-        "bc_dag_g1_new3pct": (bc + g1 + take_share(other, n_for_new(0.03)), False),
     }
+
+    if other10:
+        sets["bc_dag_all_10pct"] = (bc + g1 + other + other10, False)
 
     manifest = {"seed": SEED, "block": BLOCK, "val_frac": VAL_FRAC,
                 "pct_formula": "n_corr / (n_bc + n_corr)", "sets": {}}
