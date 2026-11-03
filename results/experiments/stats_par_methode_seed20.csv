@@ -1,0 +1,3 @@
+methode,n,succes,collisions,timeouts,taux_%,ic95_bas_%,ic95_haut_%
+BC,20,12,7,1,60.0,38.7,78.1
+BC+HG-DAgger,20,10,5,5,50.0,29.9,70.1

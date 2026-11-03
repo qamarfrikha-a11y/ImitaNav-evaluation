@@ -1,0 +1,11 @@
+trial_uid,experiment,goal,goal_x,goal_y,method,model_id,pct_correction,train_seed,trial_seed,start_x,start_y,start_yaw,model_path
+pilot__bc_dag_g1__G1__t03,pilot,G1,5.5,1.5,BC+HG-DAgger,bc_dag_g1,34.42,0,3,-0.062,-0.049,-0.002,models/clean/bc_dag_g1_seed0.pt
+pilot__bc_dag_g1__G1__t02,pilot,G1,5.5,1.5,BC+HG-DAgger,bc_dag_g1,34.42,0,2,-0.024,-0.029,0.074,models/clean/bc_dag_g1_seed0.pt
+pilot__bc__G1__t03,pilot,G1,5.5,1.5,BC,bc,0.0,0,3,-0.062,-0.049,-0.002,models/clean/bc_seed0.pt
+pilot__bc_dag_g1__G1__t00,pilot,G1,5.5,1.5,BC+HG-DAgger,bc_dag_g1,34.42,0,0,0.004,0.021,-0.009,models/clean/bc_dag_g1_seed0.pt
+pilot__bc__G1__t01,pilot,G1,5.5,1.5,BC,bc,0.0,0,1,0.023,-0.097,-0.094,models/clean/bc_seed0.pt
+pilot__bc__G1__t02,pilot,G1,5.5,1.5,BC,bc,0.0,0,2,-0.024,-0.029,0.074,models/clean/bc_seed0.pt
+pilot__bc_dag_g1__G1__t04,pilot,G1,5.5,1.5,BC+HG-DAgger,bc_dag_g1,34.42,0,4,-0.1,-0.074,-0.108,models/clean/bc_dag_g1_seed0.pt
+pilot__bc__G1__t04,pilot,G1,5.5,1.5,BC,bc,0.0,0,4,-0.1,-0.074,-0.108,models/clean/bc_seed0.pt
+pilot__bc__G1__t00,pilot,G1,5.5,1.5,BC,bc,0.0,0,0,0.004,0.021,-0.009,models/clean/bc_seed0.pt
+pilot__bc_dag_g1__G1__t01,pilot,G1,5.5,1.5,BC+HG-DAgger,bc_dag_g1,34.42,0,1,0.023,-0.097,-0.094,models/clean/bc_dag_g1_seed0.pt

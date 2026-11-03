@@ -44,7 +44,8 @@ models/clean/
 *.bak*
 *.ancienne_version
 backup_campagne_g1/
-results/experiments/
+results/experiments/*
+!results/experiments/*.csv
 data/processed/cleaning_report.txt
 archive_ancien_pipeline/data/dataset_*.npz
 scripts/patch_approche_gt.py
