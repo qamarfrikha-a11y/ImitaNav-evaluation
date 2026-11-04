@@ -1,0 +1,5 @@
+20261104_011100  G3  290 pas  dist_max 2.25  modele bc_dag_all_seed0 (a confirmer)
+20261104_123917  G5  29 pas  dist_max 0.40  modele bc_dag_all_seed0 (approche finale seulement)
+20261104_130852  G5  97 pas  dist_max 1.33  modele bc_dag_all_seed1, pose k=100, dock=false
+20261104_131543  G5  95 pas  dist_max 1.38  modele bc_dag_all_seed2, pose k=101, dock=false
+20261104_125954  G5  23 pas  dist_max 0.47  modele inconnu (approche finale seulement, lancement intermediaire)
