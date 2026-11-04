@@ -44,7 +44,8 @@ OTHER_GOALS = {
 }
 
 # Sessions collectees pour le palier ~10 % (goal a verifier dans dagger_meta_<ts>.json)
-OTHER_GOALS_10 = {"G2": [], "G3": [], "G4": [], "G5": []}
+OTHER_GOALS_10 = {"G2": [], "G3": ["20261104_011100"], "G4": [],
+                  "G5": ["20261104_123917", "20261104_125954", "20261104_130852", "20261104_131543"]}
 
 # Sessions dont la distance au goal est SATUREE (9 a 12 m pendant toute la
 # session) : incompatibles avec G1 (a 5.7 m du depart), entree "goal"
